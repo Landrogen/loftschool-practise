@@ -76,9 +76,9 @@ function returnCounter(number = 0) {
  Пример:
    returnArgumentsArray(1, 2, 3) вернет [1, 2, 3]
  */
-function returnArgumentsArray() {
+function returnArgumentsArray(...args) {
     // return [].slice.call(arguments) // или так
-    return [...arguments];
+    return args;
 }
 
 /*
@@ -96,9 +96,7 @@ function returnArgumentsArray() {
 
    console.log(newSum()) выведет 6
  */
-function bindFunction(fn) {
-    let args = [].slice.call(arguments, 1);
-
+function bindFunction(fn, ...args) {
     return function () {
         return fn.apply(null, args);
     }
