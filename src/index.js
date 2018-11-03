@@ -17,6 +17,21 @@
    isAllTrue([100, 2, 3, 4, 5], n => n < 10) // вернет false
  */
 function isAllTrue(array, fn) {
+    if (!(array instanceof Array) || array.length === 0) {
+        throw 'empty array';
+    }
+
+    if (typeof fn !== 'function') {
+        throw 'fn is not a function';
+    }
+
+    for (const item of array) {
+        if (!fn(item)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 /*
@@ -36,6 +51,21 @@ function isAllTrue(array, fn) {
    isSomeTrue([1, 2, 3, 4, 5], n => n > 20) // вернет false
  */
 function isSomeTrue(array, fn) {
+    if (!(array instanceof Array) || array.length === 0) {
+        throw 'empty array';
+    }
+
+    if (typeof fn !== 'function') {
+        throw 'fn is not a function';
+    }
+
+    for (const item of array) {
+        if (fn(item)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /*
@@ -49,7 +79,22 @@ function isSomeTrue(array, fn) {
  3.3: Необходимо выбрасывать исключение в случаях:
    - fn не является функцией (с текстом "fn is not a function")
  */
-function returnBadArguments(fn) {
+function returnBadArguments(fn, ...args) {
+    const errorsArgs = [];
+
+    if (typeof fn !== 'function') {
+        throw 'fn is not a function';
+    }
+
+    for (let value of args) {
+        try {
+            fn(value)
+        } catch (e) {
+            errorsArgs.push(value);
+        }
+    }
+
+    return errorsArgs;
 }
 
 /*
@@ -69,7 +114,31 @@ function returnBadArguments(fn) {
    - number не является числом (с текстом "number is not a number")
    - какой-либо из аргументов div является нулем (с текстом "division by 0")
  */
-function calculator() {
+function calculator(number = 0) {
+    if (!isFinite(number)) {
+        throw 'number is not a number';
+    }
+
+    return {
+        sum(...val) {
+            return val.reduce((a, b) => a + b, number);
+        },
+        dif(...val) {
+            return val.reduce((a, b) => a - b, number);
+        },
+        div(...val) {
+            return val.reduce((a, b) => {
+                if (b === 0) {
+                    throw 'division by 0';
+                }
+
+                return a / b;
+            }, number);
+        },
+        mul(...val) {
+            return val.reduce((a, b) => a * b, number);
+        }
+    }
 }
 
 /* При решении задач, пострайтесь использовать отладчик */
