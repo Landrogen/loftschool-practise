@@ -43,10 +43,86 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
-filterNameInput.addEventListener('keyup', function() {
-    // здесь можно обработать нажатия на клавиши внутри текстового поля для фильтрации cookie
+const getCookies = () => {
+    return document.cookie.split(';').map((current) => {
+        const [name, value] = current.split('=');
+
+        return { name, value }
+    });
+};
+
+const getTd = (text) => {
+    const td = document.createElement('td');
+
+    td.innerText = text;
+    return td;
+}
+
+const addToList = ({ name, value }) => {
+    let tr = document.createElement('tr'),
+        td = document.createElement('td'),
+        deleteButton = document.createElement('button');
+
+    deleteButton.innerText = 'удалить';
+    deleteButton.dataset.cookieName = name;
+
+    tr.appendChild(getTd(name));
+    tr.appendChild(getTd(value));
+    tr.appendChild(deleteButton);
+
+    listTable.appendChild(tr);
+};
+
+updateCookiesList();
+
+function createCookieList(cookies = getCookies()) {
+    listTable.innerHTML = '';
+
+    for (let c of cookies) {
+        if (c) {
+            addToList(c);
+        }
+    }
+}
+
+filterNameInput.addEventListener('keyup', () => {
+    updateCookiesList();
 });
 
 addButton.addEventListener('click', () => {
+    document.cookie = `${addNameInput.value}=${addValueInput.value};`;
+    updateCookiesList();
     // здесь можно обработать нажатие на кнопку "добавить cookie"
 });
+
+listTable.addEventListener('click', (e) => {
+    if (e.target.tagName === 'BUTTON') {
+        e.preventDefault();
+        eraseCookie(e.target.dataset.cookieName);
+        updateCookiesList()
+    }
+});
+
+function updateCookiesList() {
+    const filterWord = filterNameInput.value;
+
+    if (filterWord) {
+        const filterdCookies = getCookies().filter(c => filterCookie(c, filterWord));
+        createCookieList(filterdCookies);
+    } else {
+        createCookieList();
+    }
+}
+
+function filterCookie({ name, value }, niddle) {
+    name = name.toLowerCase();
+    value = value.toLowerCase();
+
+    let regExp = new RegExp(niddle);
+
+    return name.search(regExp) > -1 || value.search(regExp) > -1;
+}
+
+function eraseCookie(name) {
+    document.cookie = `${name}=; Max-Age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
+}
