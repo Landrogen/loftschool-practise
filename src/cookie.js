@@ -44,10 +44,16 @@ const addButton = homeworkContainer.querySelector('#add-button');
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
 const getCookies = () => {
+    if (!document.cookie) {
+        return [];
+    }
+
     return document.cookie.split(';').map((current) => {
         const [name, value] = current.split('=');
 
-        return { name, value }
+        if (name && value) {
+            return { name, value };
+        }
     });
 };
 
@@ -55,12 +61,12 @@ const getTd = (text) => {
     const td = document.createElement('td');
 
     td.innerText = text;
+
     return td;
-}
+};
 
 const addToList = ({ name, value }) => {
     let tr = document.createElement('tr'),
-        td = document.createElement('td'),
         deleteButton = document.createElement('button');
 
     deleteButton.innerText = 'удалить';
@@ -107,8 +113,9 @@ function updateCookiesList() {
     const filterWord = filterNameInput.value;
 
     if (filterWord) {
-        const filterdCookies = getCookies().filter(c => filterCookie(c, filterWord));
-        createCookieList(filterdCookies);
+        const filteredCookies = getCookies().filter(c => filterCookie(c, filterWord));
+
+        createCookieList(filteredCookies);
     } else {
         createCookieList();
     }
